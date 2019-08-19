@@ -11,6 +11,7 @@ from mysql.connector import errorcode
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
+#get time for flashsale
 def initial():
     with open("docu/flashdeal.html") as fp:
         soup = BeautifulSoup(fp, "html5lib")
@@ -28,17 +29,8 @@ def initial():
         headerTime = headerA.contents[2]
         print headerTime.text
  
-##########
-        headerContent = header3.find("div", {"class", "u-bg--sand"})
-        headerContent1 = headerContent.find("div", {"class", "o-container o-container--responsive u-pad-v--4"})
-        headerContent2 = headerContent1.contents[5]
-        headerContent3 = headerContent2.contents[2]
-        headerContent4 = headerContent3.contents[0]
-       
-        print headerContent4
-        #headerContent4 = headerContent3.find("div", {"class", "o-layout__item u-width-2of10 u-mrgn-bottom--2"})
      
-
+#get flash sale item 
 def initial2():
     with open("docu/flashdeal.html") as fp:
         soup = BeautifulSoup(fp, "html5lib")
@@ -53,7 +45,7 @@ def initial2():
         header6 = header5.contents[4]
         header7 = header6.contents[2]
         #header7a = header7.contents[0]
-        print header7 
+        #print header7 
         #header8 = header7a.contents[0] 
       
         
@@ -84,7 +76,7 @@ def initial2():
             except(IndexError):
                 break
             print("\n\n\n")
-        #for looping
+       
        
      
        
@@ -93,6 +85,7 @@ def initial2():
 
 
 if __name__ == "__main__":
+    print(initial())
     print(initial2())
 
 
