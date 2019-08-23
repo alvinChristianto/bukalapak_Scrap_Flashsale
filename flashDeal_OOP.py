@@ -23,7 +23,8 @@ class Initial:
 		#contents = requests.get(url)
 		print(self.scrapDealText(contents))
 		print(self.scrapTime(contents))
-
+                
+        #looping to get every item name, original price, discount price, left item 
 		i = 0
 		while True:
 			try:
@@ -53,12 +54,13 @@ class Initial:
 		headerA = headerli.find("a", {"class", "c-tab__link u-align-center u-pad-bottom--2"})
 		
 		return headerA
-
+        #scrap time flashdeal
 	def scrapTime(self, contents):
 		self.contents = contents
 		headerTime = self.scrapBase1(self.contents).contents[2]
 		return headerTime.text
 
+        #scrap Text on flashDeal (header)
 	def scrapDealText(self, contents):
 		self.contents = contents
 		headerDeal = self.scrapBase1(self.contents).contents[0]
@@ -76,7 +78,7 @@ class Initial:
 		header6 = header5.contents[4]
 		header7 = header6.contents[2]
 		return header7
-
+        #scrap all item name and return item name
 	def scrapItem(self, contents, cnt):
 		self.contents = contents
 		self.cnt = cnt
@@ -92,6 +94,7 @@ class Initial:
 		
 		return header12.text
 	
+        #scrap original price 
 	def hargaNormal(self, contents, cnt):
 		self.contents = contents
 		self.cnt = cnt
@@ -115,6 +118,7 @@ class Initial:
 
 		return header13a.text
 
+        #scrap discount price
 	def hargaReduce(self, contents, cnt):
 		self.contents = contents
 		self.cnt = cnt
@@ -138,7 +142,7 @@ class Initial:
 
 		return header13b.text
 
-
+        #scrap remain item left
 	def itemSisa(self, contents, cnt):
 		self.contents = contents
 		self.cnt = cnt
@@ -160,5 +164,7 @@ class Initial:
 
 		return header15a
 
+
+#main 
 temp = Initial()
 print(temp.getUrl())
