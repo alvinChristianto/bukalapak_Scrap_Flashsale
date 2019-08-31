@@ -76,6 +76,6 @@ def scrape(baseUrl):
 
 if __name__ == "__main__":
     url ="https://www.21cineplex.com"
-    #url ="https://www.bhinneka.com/promo/daily-deals"
+
     print(scrape(url))
 
