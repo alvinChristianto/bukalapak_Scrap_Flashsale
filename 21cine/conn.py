@@ -1,3 +1,12 @@
+#########################################
+# FILE   : CRUD access file to database #
+# CREATOR: alvinChristianto             #
+# DATE   : 20190901                     #
+#########################################
+
+
+
+
 import mysql.connector
 from mysql.connector import Error
 from mysql.connector import errorcode
@@ -9,20 +18,26 @@ db_connection = mysql.connector.connect(host=HOST,
                              user=USER,
                              password=PASSWORD)
 
-#select top 1 id, then add 1
 
+
+
+#####*CREATE*##### 
 sql_insert_movie    = ("""INSERT INTO TB_MOVIE_LIST (
                         movie_id, 
                         title, 
                         rating,
                         movie_link) 
                     VALUES (%s, %s, %s, %s)""")
-
+#select top 1 id, then add 1
 sql_insert_seq_id   = ("""INSERT INTO TB_SEQ_ID (
                         idseq, 
                         info) 
                     VALUES (%s, %s)""")
+####*READ*####
+sql_show_movie = ("""select * from TB_MOVIE_LIST""")
 
+
+####*UPDATE*#####
 sql_update_movie    = ("""UPDATE TB_MOVIE_LIST set 
                         genre = %s,
                         produser = %s, 
@@ -33,3 +48,6 @@ sql_update_movie    = ("""UPDATE TB_MOVIE_LIST set
                         sinopsis = %s
                          where movie_id = %s """)
 
+####*DELETE*####
+sql_delete_movie_id = ("""delete from TB_SEQ_ID""")
+sql_delete_movie    = ("""delete from TB_MOVIE_LIST""")
