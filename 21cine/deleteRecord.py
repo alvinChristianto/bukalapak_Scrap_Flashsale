@@ -1,16 +1,32 @@
 import mysql.connector
+import sys
 
 from mysql.connector import Error
 from mysql.connector import errorcode
 from conn import *
 from secret import * 
 
-def showMovie():
-    db_cursor = db_connection.cursor()
-    print "displaying all Data movie"
-    db_cursor.execute(sql_show_movie)
-    record = db_cursor.fetchall()
-    print record
+try :
+    noId = sys.argv[1]
+except IndexError:
+    noId = None
+
+def showMovie(noId):
+    db_cursor = db_connection.cursor()  
+    if noId:
+        print "displaying all Data movie with id "+noId
+        db_cursor.execute(sql_show_movie_noId, (noId,))
+        record = db_cursor.fetchone()
+        
+    else:
+        print "displaying all Data movie"
+        db_cursor.execute(sql_show_movie)
+        record = db_cursor.fetchall()
+    
+    if record is None:
+        print "no data show or there is no data at all"
+    else:
+        print record
 
 
 def deleteMovieList():
@@ -29,5 +45,5 @@ def deleteMovieList():
   
     
 
-showMovie()
-deleteMovieList()
+showMovie(noId)
+#deleteMovieList()

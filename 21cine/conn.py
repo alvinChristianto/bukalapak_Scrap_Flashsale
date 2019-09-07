@@ -35,6 +35,8 @@ sql_insert_seq_id   = ("""INSERT INTO TB_SEQ_ID (
                     VALUES (%s, %s)""")
 ####*READ*####
 sql_show_movie = ("""select * from TB_MOVIE_LIST""")
+sql_show_movie_noId = ("""select * from TB_MOVIE_LIST 
+                          where movie_id = %s """)
 
 
 ####*UPDATE*#####
