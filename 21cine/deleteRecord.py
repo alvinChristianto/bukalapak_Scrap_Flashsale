@@ -11,7 +11,7 @@ try :
 except IndexError:
     noId = None
 
-def showMovie(noId):
+def showMovieToDel(noId):
     db_cursor = db_connection.cursor()  
     if noId:
         print "displaying all Data movie with id "+noId
@@ -27,23 +27,29 @@ def showMovie(noId):
         print "no data show or there is no data at all"
     else:
         print record
+        print "\n"
+        deleteMovieList(noId) 
 
-
-def deleteMovieList():
+def deleteMovieList(noId):
     db_cursor = db_connection.cursor()
-    input = raw_input("do you want to remove all data (movie list)? (y/n)")
+    input = raw_input("do you want to remove the data ? (y/n)")
     if input == 'Y' or input == 'y' : 
-        print "all record has ben deleted !"
+        if noId:  
+            db_cursor.execute(sql_delete_movie_noId, (noId,)) 
+            db_connection.commit()      
+        else :
+            db_cursor.execute(sql_delete_movie) 
+            db_cursor.execute(sql_delete_movie_id) 
+            db_connection.commit()      
+        print "data deleted "
     elif input == 'N' or input == 'n' : 
         print "Action Canceled !"
     else :
         print "Unidentified action response, Action Canceled !"
 
-    #db_cursor.execute(sql_delete_movie)
-    #db_cursor.execute(sql_delete_movie_id)
-    #db_connection.commit()
+   
   
     
 
-showMovie(noId)
-#deleteMovieList()
+showMovieToDel(noId)
+
