@@ -51,5 +51,6 @@ sql_update_movie    = ("""UPDATE TB_MOVIE_LIST set
                          where movie_id = %s """)
 
 ####*DELETE*####
-sql_delete_movie_id = ("""delete from TB_SEQ_ID""")
+sql_delete_movie_id = ("""delete from TB_SEQ_ID where idseq > 10001""")
+sql_delete_movie_noId    = ("""delete from TB_MOVIE_LIST where movie_id = %s """)
 sql_delete_movie    = ("""delete from TB_MOVIE_LIST""")

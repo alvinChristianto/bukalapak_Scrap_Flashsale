@@ -25,9 +25,18 @@ def getSource(header):
 
     for link in header.find_all('div'): 
         headerMov = link.find("div", {"class": "movie"}) 
+     
         if (headerMov != None):
             headerMovDesc = headerMov.find("div", {"class": "movie-desc"})  
             headerMovLab = headerMovDesc.find("span", {"class": "movie-label"})
+            
+            #handle nonetype getitem error
+            #if headerMovLab == None :
+            #    movie_rating = ""
+            #else :
+            #movie_rating = headerMovLab.img['alt'] 
+            #    print "rating-->"+movie_rating
+            
             headerlink = headerMov.find('a')
             headerHref = headerlink.get('href')
             
@@ -35,17 +44,18 @@ def getSource(header):
             movie_title = headerMovDesc.h4.text
            
             #get rating on alt tag
-            movie_rating = headerMovLab.img['alt']
+            movie_rating = headerMovLab.img['alt'] 
+           
             
             #get link href
             movie_link =  headerHref
            
             #get all info on href
-            #getPerPage(headerHref)
+            getPerPage(headerHref)
 
          
             getOnlyId = getId() 
-            db_cursor.execute(sql_insert_seq_id, getId())  
+            #db_cursor.execute(sql_insert_seq_id, getId())  
             
 
             listEntry = (getOnlyId[0], movie_title, movie_rating, movie_link)
@@ -58,7 +68,9 @@ def getSource(header):
            
             time.sleep(0.2)
             getPerPage(headerHref, getOnlyId[0])
-            print ("ALL Record inserted successfully into python_users table")  
+ 
+       
+    print ("ALL Record inserted successfully into python_users table")  
     db_cursor.close()              
 
 
