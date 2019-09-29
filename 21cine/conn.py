@@ -8,15 +8,16 @@
 
 
 import mysql.connector
+import secret
 from mysql.connector import Error
 from mysql.connector import errorcode
-from secret import *
+#from secret import *
 
 
-db_connection = mysql.connector.connect(host=HOST,
-                             database=DATABASE,
-                             user=USER,
-                             password=PASSWORD)
+db_connection = mysql.connector.connect(host=secret.HOST,
+                             database=secret.DATABASE,
+                             user=secret.USER,
+                             password=secret.PASSWORD)
 
 
 
