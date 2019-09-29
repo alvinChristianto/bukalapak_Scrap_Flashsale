@@ -1,6 +1,7 @@
 import requests
 import mysql.connector
 import re
+import logging
 
 from bs4 import BeautifulSoup
 from mysql.connector import Error
@@ -42,11 +43,12 @@ def getPerPage(url, movie_id):
     listPage.append(headerDescSynop.p.text)
     listPage.append(movie_id)
   
-    print listPage 
-    print sql_update_movie 
+    logging.info('insert synopsis %s ' % str(listPage))
+    #print listPage 
+    #print sql_update_movie 
     db_cursor.execute(sql_update_movie, listPage)
  
     db_connection.commit()
-    
+    db_cursor.close() 
 
 
