@@ -28,7 +28,7 @@ def getId():
     return listId
 
 def getSource(header):
-    db_cursor = db_connection.cursor()
+    db_cursor = db_connection.cursor(buffered=True)
 
     for link in header.find_all('div'): 
         headerMov = link.find("div", {"class": "movie"}) 
@@ -42,51 +42,49 @@ def getSource(header):
             
             #get title movie
             movie_title = headerMovDesc.h4.text
+            
+            checkmov = getSeqId.checkMov(movie_title) 
+            chkMov = checkmov
+            #if return 1 then pass/already exist, 0 need to insert
+            if chkMov == 1:
+                logging.info('movie title exist : '+str(movie_title))
+                continue    
+            else :
+                logging.info('inserting : '+str(movie_title))
+                #get rating on alt tag
+                #handle nonetype getitem error
+                if headerMovLab.img == None :
+                    movie_rating = ""
+                else :
+                    movie_rating = headerMovLab.img['alt'] 
+            
+                #get link href
+                movie_link =  headerHref
+            
+                getOnlyId = getId() 
+                logging.info('creating id '+str(getOnlyId))
+                db_cursor.execute(sql_insert_seq_id, getId())  
+           
           
-            #get rating on alt tag
-            #handle nonetype getitem error
-            if headerMovLab.img == None :
-                movie_rating = ""
-            else :
-                movie_rating = headerMovLab.img['alt'] 
-            
-            #get link href
-            movie_link =  headerHref
-            
-            getOnlyId = getId() 
-            logging.info('creating id '+str(getOnlyId))
-            db_cursor.execute(sql_insert_seq_id, getId())  
-           
-            #logging.info('sampai sini' + str(getSeqId.checkMov('Good Boy')))
-            checkmov = getSeqId.checkMov('God Boys') 
-            if checkmov[0] != None:
-                logging.info('pass / update')
-            else :
-                logging.info('insert database')
-
-                
-           
-
-            break
-            listEntry = (
+                listEntry = (
                     getOnlyId[0], 
                     movie_title, 
                     movie_rating, 
                     movie_link
                     )
-            #logging.info('insert ID|TITLE|RATING|LINK  '+str(tuple(listEntry.split(', '))))
+                #logging.info('insert ID|TITLE|RATING|LINK  '+str(tuple(listEntry.split(', '))))
           
-            logging.info('insert TITLE|RATING|LINK -> %s | %s | %s '
+                logging.info('insert TITLE|RATING|LINK -> %s | %s | %s '
                         % (movie_title, movie_rating, movie_link))
    
-            db_cursor.execute(sql_insert_movie, listEntry)  
-            db_connection.commit()
+                db_cursor.execute(sql_insert_movie, listEntry)  
+                db_connection.commit()
            
-            scrPerPage.getPerPage(headerHref, getOnlyId[0])
-            logging.info('id '+ str(getOnlyId[0]) + ' inserted succesfully')
-            time.sleep(0.2) 
-       
-    logging.info(str(getOnlyId) + " inserted successfully into python_users table")  
+                scrPerPage.getPerPage(headerHref, getOnlyId[0])
+                logging.info('id '+ str(getOnlyId[0]) + ' inserted succesfully')
+                time.sleep(0.2) 
+            logging.info("next ") 
+    logging.info("All inserted successfully into python_users table")  
     db_cursor.close()              
 
 

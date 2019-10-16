@@ -10,12 +10,18 @@ def getSeqId():
     return myresult
 
 def checkMov(title):
-    db_cursor = db_connection.cursor()
+    ret = 0
+    db_cursor = db_connection.cursor(buffered=True)
     stat_db = "SELECT title FROM TB_MOVIE_LIST where title = '"+title+"'"
    
     db_cursor.execute(stat_db)
     
     myresult = db_cursor.fetchone()
 
-    return myresult
+    if myresult == None :
+        ret = 0
+    else :
+        ret = 1
+   
+    return ret
 
