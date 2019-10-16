@@ -56,8 +56,18 @@ def getSource(header):
             getOnlyId = getId() 
             logging.info('creating id '+str(getOnlyId))
             db_cursor.execute(sql_insert_seq_id, getId())  
-            
-            
+           
+            #logging.info('sampai sini' + str(getSeqId.checkMov('Good Boy')))
+            checkmov = getSeqId.checkMov('God Boys') 
+            if checkmov[0] != None:
+                logging.info('pass / update')
+            else :
+                logging.info('insert database')
+
+                
+           
+
+            break
             listEntry = (
                     getOnlyId[0], 
                     movie_title, 
@@ -93,7 +103,8 @@ def scrape(baseUrl):
     header = soup.find("div", {"id": "now-playing"})
     #print soup.prettify()
     try: 
-        getSource(header)   
+        getSource(header)
+      
     except BaseException as e:
         logging.error('Error %s' % str(e))
         logging.error('line '.format(sys.exc_info()[-1].tb_lineno))
