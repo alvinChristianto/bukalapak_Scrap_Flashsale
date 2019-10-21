@@ -72,7 +72,7 @@ def getSource(header):
                     movie_rating, 
                     movie_link
                     )
-                #logging.info('insert ID|TITLE|RATING|LINK  '+str(tuple(listEntry.split(', '))))
+                logging.info('id and link '+str(getOnlyId[0]) + ", " +movie_link)
           
                 logging.info('insert TITLE|RATING|LINK -> %s | %s | %s '
                         % (movie_title, movie_rating, movie_link))

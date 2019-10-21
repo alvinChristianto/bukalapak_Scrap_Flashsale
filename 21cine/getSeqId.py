@@ -3,7 +3,7 @@ from conn import *
 
 def getSeqId():
     db_cursor = db_connection.cursor()
-    db_cursor.execute("SELECT MAX(idseq) FROM TB_SEQ_ID")
+    db_cursor.execute("SELECT MAX(idseq) FROM tb_seq_id")
 
     myresult = db_cursor.fetchone()
 
@@ -12,7 +12,7 @@ def getSeqId():
 def checkMov(title):
     ret = 0
     db_cursor = db_connection.cursor(buffered=True)
-    stat_db = "SELECT title FROM TB_MOVIE_LIST where title = '"+title+"'"
+    stat_db = "SELECT title FROM tb_movie_list where title = '"+title+"'"
    
     db_cursor.execute(stat_db)
     
