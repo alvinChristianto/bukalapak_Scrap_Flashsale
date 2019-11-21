@@ -3,20 +3,22 @@ from conn import *
 
 def getSeqId():
     db_cursor = db_connection.cursor()
-    db_cursor.execute("SELECT MAX(idseq) FROM tb_seq_id")
-
+    stat_db = "SELECT MAX(idseq) FROM tb_seq_id"
+    db_cursor.execute(stat_db)
+    
     myresult = db_cursor.fetchone()
 
     return myresult
 
-def checkMov(title):
+def checkMov(cursor, title):
     ret = 0
-    db_cursor = db_connection.cursor(buffered=True)
-    stat_db = "SELECT title FROM tb_movie_list where title = '"+title+"'"
-   
-    db_cursor.execute(stat_db)
-    
-    myresult = db_cursor.fetchone()
+    #db_cursor = db_connection.cursor(buffered=True)
+    stat_db = """SELECT title FROM tb_movie_list where title = "%s" """ %title
+    print stat_db
+    #db_cursor.execute(stat_db)
+    cursor.execute(stat_db)
+
+    myresult = cursor.fetchone()
 
     if myresult == None :
         ret = 0
