@@ -2,6 +2,7 @@ import requests
 import mysql.connector
 import re
 import logging
+import FileAccess
 
 from bs4 import BeautifulSoup
 from mysql.connector import Error
@@ -13,9 +14,8 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-def getPerPage(url, movie_id):
-
-    db_cursor = db_connection.cursor()
+def getPerPage(conn, url, movie_id):
+    #db_cursor = conn.cursor()
     r = requests.get(url, verify=False)
     soup = BeautifulSoup(r.text, "html5lib")
 
@@ -46,9 +46,6 @@ def getPerPage(url, movie_id):
     logging.info('insert synopsis %s ' % str(listPage))
     #print listPage 
     #print sql_update_movie 
-    db_cursor.execute(sql_update_movie, listPage)
- 
-    db_connection.commit()
-    db_cursor.close() 
-
+    FileAccess.updateMovie(conn,listPage)
+    
 

@@ -6,9 +6,9 @@ import logging
 
 import getSeqId
 import scrPerPage
+import FileAccess
 
 from secret import *
-from conn import *
 from bs4 import BeautifulSoup
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from mysql.connector import Error
@@ -27,8 +27,22 @@ def getId():
     listId = (newidSeq, "")
     return listId
 
+def stringNeutral(movie_title):
+    movie_title = list(movie_title)
+    try:
+        titleIndex = movie_title.index("'")
+        if titleIndex:
+            movie_title.insert(titleIndex, '\\')
+            print movie_title
+    except Exception as e:
+        pass
+           
+    movie_title = "".join(movie_title) 
+    return movie_title
+
 def getSource(header):
-    db_cursor = db_connection.cursor(buffered=True)
+    #db_cursor = db_connection.cursor(buffered=True)
+    db_cursor = FileAccess.Connect()
 
     for link in header.find_all('div'): 
         headerMov = link.find("div", {"class": "movie"}) 
@@ -39,18 +53,22 @@ def getSource(header):
             
             headerlink = headerMov.find('a')
             headerHref = headerlink.get('href')
-            
+           
             #get title movie
             movie_title = headerMovDesc.h4.text
-            
-            checkmov = getSeqId.checkMov(movie_title) 
+           
+            #neutralize "'" EOL error
+            #movie_title = stringNeutral(movie_title)
+
+            checkmov = FileAccess.checkMov(db_cursor, movie_title)
             chkMov = checkmov
+           
             #if return 1 then pass/already exist, 0 need to insert
             if chkMov == 1:
                 logging.info('movie title exist : '+str(movie_title))
                 continue    
             else :
-                logging.info('inserting : '+str(movie_title))
+                logging.info('inserting : %s' %movie_title)
                 #get rating on alt tag
                 #handle nonetype getitem error
                 if headerMovLab.img == None :
@@ -61,29 +79,30 @@ def getSource(header):
                 #get link href
                 movie_link =  headerHref
             
-                getOnlyId = getId() 
-                logging.info('creating id '+str(getOnlyId))
-                db_cursor.execute(sql_insert_seq_id, getId())  
-           
+                getSeqId = FileAccess.getSeqId(db_cursor) 
+                logging.info('creating id '+str(getSeqId))
+              
+                FileAccess.insertSeqId(db_cursor,getSeqId[0], getSeqId[1])
           
                 listEntry = (
-                    getOnlyId[0], 
+                    getSeqId[0], 
                     movie_title, 
                     movie_rating, 
                     movie_link
                     )
-                logging.info('id and link '+str(getOnlyId[0]) + ", " +movie_link)
+                logging.info('id and link '+str(getSeqId[0]) + ", " +movie_link)
           
                 logging.info('insert TITLE|RATING|LINK -> %s | %s | %s '
                         % (movie_title, movie_rating, movie_link))
    
-                db_cursor.execute(sql_insert_movie, listEntry)  
-                db_connection.commit()
-           
-                scrPerPage.getPerPage(headerHref, getOnlyId[0])
-                logging.info('id '+ str(getOnlyId[0]) + ' inserted succesfully')
+                FileAccess.insertMovie(db_cursor, listEntry)
+                #db_cursor.execute(sql_insert_movie, listEntry)  
+                #db_connection.commit()
+                
+                scrPerPage.getPerPage(db_cursor, headerHref, getSeqId[0])
+                logging.info('id '+ str(getSeqId[0]) + ' inserted succesfully')
                 time.sleep(0.2) 
-            logging.info("next ") 
+            logging.info("next record") 
     logging.info("All inserted successfully into python_users table")  
     db_cursor.close()              
 
@@ -105,7 +124,7 @@ def scrape(baseUrl):
       
     except BaseException as e:
         logging.error('Error %s' % str(e))
-        logging.error('line '.format(sys.exc_info()[-1].tb_lineno))
+        #logging.error('line '.format(sys.exc_info()[-1].tb_lineno))
         
         #print "Error : " +str(e)
         #print "line : {}".format(sys.exc_info()[-1].tb_lineno)
