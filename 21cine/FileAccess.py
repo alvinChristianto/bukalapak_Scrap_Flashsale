@@ -47,53 +47,59 @@ def getSeqId(conn):
   
 def checkMov(conn, title):
     ret = 0
-  
-    #db_cursor = db_connection.cursor(buffered=True)
-    stat_db = """SELECT title FROM tb_movie_list where title = "%s" """ %title
- 
-    db_cursor = conn.cursor()
-    db_cursor.execute(stat_db)
-    logging.info("executing --> "+stat_db) 
-  
-    myresult = db_cursor.fetchone()
+    try : 
+        #db_cursor = db_connection.cursor(buffered=True)
+        stat_db = """SELECT title FROM tb_movie_list where title = "%s" """ %title
+     
+        db_cursor = conn.cursor()
+        db_cursor.execute(stat_db)
+        logging.info("executing --> "+stat_db) 
+      
+        myresult = db_cursor.fetchone()
 
-    if myresult == None :
-        ret = 0
-    else :
-        ret = 1
+        if myresult == None :
+            ret = 0
+        else :
+            ret = 1
 
-    return ret
+        return ret
 
+    except Exception as err:
+        logging.error(err)
 
 
 
 #####*CREATE*##### 
 def insertSeqId(conn, arg1, arg2):
-    stat_db = """INSERT INTO tb_seq_id(
-                    idseq,
-                    info)
-                VALUES (%d, '%s')""" %(arg1, arg2)
-    
-    db_cursor = conn.cursor()
-    db_cursor.execute(stat_db)
-    logging.info("executing --> "+stat_db) 
-    conn.commit()
+    try:
+        stat_db = """INSERT INTO tb_seq_id(
+                        idseq,
+                        info)
+                    VALUES (%d, '%s')""" %(arg1, arg2)
+        
+        db_cursor = conn.cursor()
+        db_cursor.execute(stat_db)
+        logging.info("executing --> "+stat_db) 
+        conn.commit()
+    except Exception as err:
+        logging.error(err)
     
 def insertMovie(conn, entry):
-    stat_db = """INSERT INTO tb_movie_list (
-                        movie_id, 
-                        title, 
-                        rating,
-                        movie_link) 
-                    VALUES (%d, "%s", '%s', '%s')""" %(entry[0], entry[1], entry[2], entry[3])
-   
-    db_cursor = conn.cursor()
-    db_cursor.execute(stat_db)
-    logging.info("executing --> "+stat_db) 
-    conn.commit()
-
-
-
+    try:
+        stat_db = """INSERT INTO tb_movie_list (
+                            movie_id, 
+                            title, 
+                            rating,
+                            movie_link) 
+                        VALUES (%d, "%s", '%s', '%s')""" %(entry[0], entry[1], entry[2], entry[3])
+       
+        db_cursor = conn.cursor()
+        db_cursor.execute(stat_db)
+        logging.info("executing --> "+stat_db) 
+        conn.commit()
+    except Exception as err:
+        logging.error(err)
+    
 sql_insert_seq_id   = ("""INSERT INTO tb_seq_id (
                         idseq, 
                         info) 
@@ -106,22 +112,25 @@ sql_show_movie_noId = ("""select * from tb_movie_list
 
 ####*UPDATE*#####
 def updateMovie(conn, entry):
-    stat_db    = """UPDATE tb_movie_list set 
-                        genre = '%s',
-                        produser = '%s', 
-                        sutradara = '%s',
-                        writer = '%s', 
-                        rumah_produksi = '%s', 
-                        cast = '%s', 
-                        sinopsis = "%s"
-                         where movie_id = %d """%(entry[0],entry[1], entry[2], entry[3], entry[4], 
-                                                entry[5], entry[6], entry[7]) 
-  
-    db_cursor = conn.cursor()
-    db_cursor.execute(stat_db)
-    logging.info("executing --> "+stat_db)  
-    conn.commit()
-
+    try :
+        stat_db    = """UPDATE tb_movie_list set 
+                            genre = '%s',
+                            produser = '%s', 
+                            sutradara = '%s',
+                            writer = '%s', 
+                            rumah_produksi = '%s', 
+                            cast = '%s', 
+                            sinopsis = "%s"
+                             where movie_id = %d """%(entry[0],entry[1], entry[2], entry[3],
+                                                    entry[4],entry[5], entry[6], entry[7]) 
+        db_cursor = conn.cursor()
+        db_cursor.execute(stat_db)
+        logging.info("executing --> "+stat_db)  
+        conn.commit()
+    
+    except Exception as err:
+        logging.error(err)
+    
 
 ####*DELETE*####
 sql_delete_movie_id = ("""delete from tb_seq_id where idseq > 10001""")

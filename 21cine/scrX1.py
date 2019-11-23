@@ -32,7 +32,7 @@ def stringNeutral(movie_title):
     try:
         titleIndex = movie_title.index("'")
         if titleIndex:
-            movie_title.insert(titleIndex, '\\')
+            movie_title.insert(titleIndex, "'")
             print movie_title
     except Exception as e:
         pass
@@ -96,8 +96,7 @@ def getSource(header):
                         % (movie_title, movie_rating, movie_link))
    
                 FileAccess.insertMovie(db_cursor, listEntry)
-                #db_cursor.execute(sql_insert_movie, listEntry)  
-                #db_connection.commit()
+             
                 
                 scrPerPage.getPerPage(db_cursor, headerHref, getSeqId[0])
                 logging.info('id '+ str(getSeqId[0]) + ' inserted succesfully')
