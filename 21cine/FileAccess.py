@@ -67,6 +67,27 @@ def checkMov(conn, title):
     except Exception as err:
         logging.error(err)
 
+def checkTheater(conn, theaterId):
+    try : 
+        stat_db = """SELECT * FROM tb_theater where theaterId = "%s" """ %theaterId
+     
+        db_cursor = conn.cursor()
+        db_cursor.execute(stat_db)
+        logging.info("executing --> "+stat_db) 
+      
+        myresult = db_cursor.fetchone()
+
+        if myresult == None :
+            ret = 0
+        else :
+            ret = 1
+
+        return ret
+
+    except Exception as err:
+        logging.error(err)
+
+
 
 
 #####*CREATE*##### 
@@ -99,12 +120,31 @@ def insertMovie(conn, entry):
         conn.commit()
     except Exception as err:
         logging.error(err)
-    
+
+def insertTheaterInfo(conn, cityId, url):
+    city = ""
+    try : 
+        stat_db = """INSERT INTO tb_theater(theaterId, url, city)
+                    VALUES (%s, '%s', '%s') """ %(cityId, url,city )
+     
+        db_cursor = conn.cursor()
+        db_cursor.execute(stat_db)
+        logging.info("executing --> "+stat_db) 
+        conn.commit()
+    except Exception as err:
+        logging.error(err)
+      
+   
+
+
+
 sql_insert_seq_id   = ("""INSERT INTO tb_seq_id (
                         idseq, 
                         info) 
                     VALUES (%s, %s)""")
 ####*READ*####
+
+
 sql_show_movie = ("""select * from tb_movie_list""")
 sql_show_movie_noId = ("""select * from tb_movie_list 
                           where movie_id = %s """)
