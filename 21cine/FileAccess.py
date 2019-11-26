@@ -87,6 +87,26 @@ def checkTheater(conn, theaterId):
     except Exception as err:
         logging.error(err)
 
+def checkTheaterByCity(conn, city):
+    try : 
+        stat_db = """SELECT * FROM tb_theater where  url like  "%%s%" """ %city
+        logging.info("executing --> "+stat_db) 
+     
+        db_cursor = conn.cursor()
+        db_cursor.execute(stat_db)
+      
+        myresult = db_cursor.fetchone()
+
+        if myresult == None :
+            ret = 0
+        else :
+            ret = 1
+
+        return ret
+
+    except Exception as err:
+        logging.error(err)
+
 
 
 
