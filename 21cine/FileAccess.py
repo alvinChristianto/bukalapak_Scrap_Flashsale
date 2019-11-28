@@ -89,19 +89,20 @@ def checkTheater(conn, theaterId):
 
 def checkTheaterByCity(conn, city):
     try : 
-        stat_db = """SELECT * FROM tb_theater where  url like  "%%s%" """ %city
+        stat_db = """SELECT url FROM tb_theater where  url like '%"""+city+"""%' """
         logging.info("executing --> "+stat_db) 
      
         db_cursor = conn.cursor()
         db_cursor.execute(stat_db)
       
         myresult = db_cursor.fetchone()
-
+        logging.info("result "+myresult[0]) 
+        
         if myresult == None :
             ret = 0
         else :
-            ret = 1
-
+            ret = myresult
+   
         return ret
 
     except Exception as err:

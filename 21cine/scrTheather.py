@@ -13,6 +13,27 @@ FORMAT = "%(asctime)s : %(levelname)s >> %(message)s"
 
 url = "https://21cineplex.com/theaters"
 
+def inputValidation(word):
+    regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')  
+    if len(word) == 0:
+        print 'no city inserted, please enter valid input'
+        logging.info('no city inserted') 
+       
+        return 0
+    elif word.isdigit():
+        print 'input is digit [%s], please enter valid input' %word
+        logging.info('input is digit [%s]' %word)
+
+        return 0
+    elif regex.search(word) is not None :
+        print 'input contain special character [%s], please enter valid input' %word
+        logging.info('input is special char [%s]' %word)
+      
+        return 0
+    else :
+        return 1
+
+
 def scrapTheater(conn, url):
     logging.basicConfig(
             filename='theater.log',
@@ -22,30 +43,24 @@ def scrapTheater(conn, url):
     
     r = requests.get(url, verify=False)
     soup = BeautifulSoup(r.text, "html5lib")
-    getLatestCity(conn,soup)
+    #getLatestCity(conn,soup)
    
     try:
         i = 0
         n = 3
-        regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]') 
+      
         while i < n:
             input = raw_input("search by city : ")
-            if len(input) == 0:
-                print 'no city inserted, please enter valid input'
-                logging.info('no city inserted') 
-                i += 1
-            elif input.isdigit():
-                print 'input is digit [%s], please enter valid input' %input
-                logging.info('input is digit [%s]' %input)
-                i += 1
-            elif regex.search(input) is not None :
-                print 'input contain special character [%s], please enter valid input' %input
-                logging.info('input is special char [%s]' %input)
-                i += 1
+            resultVal = inputValidation(input)
+           
+            if resultVal == 0:
+                i+=1
+           
             else :
-                searchTheaterByCity(conn, input)
                 print "do search [%s]" %input 
+                searchTheaterByCity(conn, input)
                 logging.info('do search by city ')  
+                conn.close()
                 break
    
             
@@ -58,6 +73,7 @@ def scrapTheater(conn, url):
 
 
 def getLatestCity(db_cursor, soup):
+    #start from section id='content'
     getSectionContent = soup.find("section", {"id": "content"})
     getBaseCity = getSectionContent.find("div", {"class": "select-twenty dark-twenty"})
     getCity = getBaseCity.find("select", {"class": "custom-select"})
@@ -75,9 +91,76 @@ def getLatestCity(db_cursor, soup):
                 FileAccess.insertTheaterInfo(db_cursor, cityId, cityUrl)
     except Exception as err:
         logging.error(err)
+
+def getTheaterbyUrl(conn, url, city):
+    r = requests.get(url, verify=False)
+    soup = BeautifulSoup(r.text, "html5lib")
+    #validation   
+    try:
+        i = 0
+        n = 3
+      
+        while i < n:
+            input = raw_input("choose theater -> XXI, Premiere, Imax : ")
+            resultVal = inputValidation(input)
+           
+            if resultVal == 0:
+                i+=1
+           
+            else :
+                print "do search Theater [%s] with type [%s]" %(city, input) 
+                searchTheaterType(conn,soup, input)
+                logging.info('do search theater type ')  
+                conn.close()
+                break
+   
+            
+            logging.info('var i %s' %i)
+            if i == n:
+                print 'Action canceled' 
+
+    except Exception as err:
+        logging.error(err)
+
+    
+def searchTheaterType(conn, soup, input):
+    #start from div class='tab-container'
+    val = ''
+    if input == 'XXI':
+        val = 'tableXXI'
+    elif input == 'Premiere':
+        val = 'talePREMIERE'
+    elif input =='Imax':
+        val = 'tableIMAX'
   
+    getStartDiv = soup.find("div", {"class": "tab-container"})
+    getTheaterType = getStartDiv.find("tbody", {"id": ""+val+""}) 
+    try : 
+        for link in getTheaterType.find_all('tr'):
+            getNameTheater = link.find('td').text
+            getUrlTheater = link.find('a').get('href')
+            getNoneItem = link.find('td').next_sibling.next_sibling
+            getTelpTheater =  getNoneItem.next_sibling.next_sibling.text
+            logging.info(getNameTheater)
+            logging.info(getUrlTheater)
+            logging.info(getTelpTheater)
+            #getUrlTheater = link.find('a')
+            #getTelpTheater = link 
+    except Exception as err :
+        logging.error(err)
+
+    
 def searchTheaterByCity(conn, inputCity):
-    print FileAccess.checkTheaterByCity(conn, inputCity)
+    urlRet = FileAccess.checkTheaterByCity(conn, inputCity)
+    if urlRet is not None :
+        #record exist
+        getTheaterbyUrl(conn, urlRet[0], inputCity)
+
+    else : 
+        #record not exist, berikan usulan pencarian 
+        logging.info('no item found on that keyword')
+
+
 
 def main():
     db_cursor = FileAccess.Connect() 
