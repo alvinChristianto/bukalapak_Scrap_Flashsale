@@ -43,6 +43,7 @@ def getSeqId(conn):
         return listResult
     except Exception as err:
         logging.error(err) 
+        raise  
         
   
 def checkMov(conn, title):
@@ -66,10 +67,11 @@ def checkMov(conn, title):
 
     except Exception as err:
         logging.error(err)
+        raise  
 
 def checkTheater(conn, theaterId):
     try : 
-        stat_db = """SELECT * FROM tb_theater where theaterId = "%s" """ %theaterId
+        stat_db = """SELECT * FROM tb_theater_url where theaterId = "%s" """ %theaterId
      
         db_cursor = conn.cursor()
         db_cursor.execute(stat_db)
@@ -86,27 +88,28 @@ def checkTheater(conn, theaterId):
 
     except Exception as err:
         logging.error(err)
+        raise  
 
 def checkTheaterByCity(conn, city):
     try : 
-        stat_db = """SELECT url FROM tb_theater where  url like '%"""+city+"""%' """
+        stat_db = """SELECT url FROM tb_theater_url where city = '%s' """ %city
         logging.info("executing --> "+stat_db) 
      
         db_cursor = conn.cursor()
         db_cursor.execute(stat_db)
       
-        myresult = db_cursor.fetchone()
-        logging.info("result "+myresult[0]) 
+        myresult = db_cursor.fetchone() 
         
-        if myresult == None :
-            ret = 0
-        else :
+        if myresult is not None :
             ret = myresult
-   
+        else :
+            ret = 0
+      
         return ret
 
     except Exception as err:
         logging.error(err)
+        raise  
 
 
 
@@ -125,6 +128,7 @@ def insertSeqId(conn, arg1, arg2):
         conn.commit()
     except Exception as err:
         logging.error(err)
+        raise  
     
 def insertMovie(conn, entry):
     try:
@@ -141,12 +145,13 @@ def insertMovie(conn, entry):
         conn.commit()
     except Exception as err:
         logging.error(err)
+        raise  
 
-def insertTheaterInfo(conn, cityId, url):
+def insertTheaterInfo(conn, cityId, url, name):
     city = ""
     try : 
-        stat_db = """INSERT INTO tb_theater(theaterId, url, city)
-                    VALUES (%s, '%s', '%s') """ %(cityId, url,city )
+        stat_db = """INSERT INTO tb_theater_url(theaterId, url, city)
+                    VALUES (%s, '%s', '%s') """ %(cityId, url,name )
      
         db_cursor = conn.cursor()
         db_cursor.execute(stat_db)
@@ -154,8 +159,21 @@ def insertTheaterInfo(conn, cityId, url):
         conn.commit()
     except Exception as err:
         logging.error(err)
-      
-   
+        raise  
+
+def insertAllTheater(conn, types, name, url, telp ):
+    try : 
+        stat_db = """INSERT INTO tb_theater_data(type, name, phone, url)
+                    VALUES ('%s', '%s','%s' ,'%s') """ %(types, name, telp, url )
+     
+        db_cursor = conn.cursor()
+        db_cursor.execute(stat_db)
+        logging.info("executing --> "+stat_db) 
+        conn.commit()
+    except Exception as err:
+        logging.error(err)
+        raise  
+    
 
 
 
@@ -191,6 +209,7 @@ def updateMovie(conn, entry):
     
     except Exception as err:
         logging.error(err)
+        raise  
     
 
 ####*DELETE*####
