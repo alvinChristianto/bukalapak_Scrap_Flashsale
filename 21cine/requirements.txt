@@ -29,7 +29,7 @@ public==2019.4.13
 pycrypto==2.6.1
 pygobject==3.26.1
 pytz==2018.9
-pyxdg==0.25
+pyxdg==0.26
 query-string==2019.4.13
 request==2019.4.13
 requests==2.22.0
