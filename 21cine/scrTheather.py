@@ -119,7 +119,7 @@ def getTheaterbyUrl(conn, url, city):
            
             else :
                 print "do search Theater [%s] with type [%s]" %(city, input) 
-                searchTheaterType(conn,soup, input)
+                searchTheaterType(conn,soup, input, city)
                 logging.info('do search theater type ')  
                 conn.close()
                 break
@@ -134,30 +134,39 @@ def getTheaterbyUrl(conn, url, city):
         raise
 
 #do search all theater based on type  
-def searchTheaterType(conn, soup, input):
+def searchTheaterType(conn, soup, input, city):
     #start from div class='tab-container'
+    
+    print 'list of theater with type [%s] in [%s] :' %(input, city)
     val = ''
     if input == 'XXI':
         val = 'tableXXI'
     elif input == 'Premiere':
-        val = 'talePREMIERE'
+        val = 'tablePREMIER'
     elif input =='Imax':
         val = 'tableIMAX'
   
     getStartDiv = soup.find("div", {"class": "tab-container"})
     getTheaterType = getStartDiv.find("tbody", {"id": ""+val+""}) 
-    try : 
-        for link in getTheaterType.find_all('tr'):
-            getNameTheater = link.find('td').text
-            getUrlTheater = link.find('a').get('href')
-            getNoneItem = link.find('td').next_sibling.next_sibling
-            getTelpTheater =  getNoneItem.next_sibling.next_sibling.text
-            logging.info(getNameTheater)
-            logging.info(getUrlTheater)
-            logging.info(getTelpTheater)
-            FileAccess.insertAllTheater(conn, val, getNameTheater,
-                                    getUrlTheater, getTelpTheater)
-
+    try :
+        logging.info("select theater type [%s] " %val)
+        if len(getTheaterType.find_all('tr')) == 0 :
+            logging.info('no data found for [%s] '%val)
+            print 'no data found'
+        else :
+            for link in getTheaterType.find_all('tr'):
+              
+                getNameTheater = link.find('td').text
+                getUrlTheater = link.find('a').get('href')
+                getNoneItem = link.find('td').next_sibling.next_sibling
+                getTelpTheater =  getNoneItem.next_sibling.next_sibling.text
+                logging.info(getNameTheater)
+                logging.info(getUrlTheater)
+                logging.info(getTelpTheater)
+                FileAccess.insertAllTheater(conn, val, getNameTheater,
+                                        getUrlTheater, getTelpTheater)
+               
+                print ' -'+getNameTheater+ ' : ' +getTelpTheater
 
     except Exception as err :
         logging.error(err)
