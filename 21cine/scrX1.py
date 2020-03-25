@@ -42,7 +42,7 @@ def stringNeutral(movie_title):
 
 def getSource(header):
     #db_cursor = db_connection.cursor(buffered=True)
-    db_cursor = FileAccess.Connect()
+    db_cursor = FileAccess.Connect()            #connect to database
 
     for link in header.find_all('div'): 
         headerMov = link.find("div", {"class": "movie"}) 
@@ -60,11 +60,11 @@ def getSource(header):
             #neutralize "'" EOL error
             #movie_title = stringNeutral(movie_title)
 
-            checkmov = FileAccess.checkMov(db_cursor, movie_title)
+            checkmov = FileAccess.checkMov(db_cursor, movie_title)      #check db if title exist
             chkMov = checkmov
            
-            #if return 1 then pass/already exist, 0 need to insert
-            if chkMov == 1:
+            
+            if chkMov == 1:               #if return 1 then pass/already exist, 0 need to insert
                 logging.info('movie title exist : '+str(movie_title))
                 continue    
             else :
@@ -79,10 +79,10 @@ def getSource(header):
                 #get link href
                 movie_link =  headerHref
             
-                getSeqId = FileAccess.getSeqId(db_cursor) 
+                getSeqId = FileAccess.getSeqId(db_cursor)       #get new id based on prev id 
                 logging.info('creating id '+str(getSeqId))
               
-                FileAccess.insertSeqId(db_cursor,getSeqId[0], getSeqId[1])
+                FileAccess.insertSeqId(db_cursor,getSeqId[0], getSeqId[1]) #insert new id [id,info]
           
                 listEntry = (
                     getSeqId[0], 
@@ -95,10 +95,9 @@ def getSource(header):
                 logging.info('insert TITLE|RATING|LINK -> %s | %s | %s '
                         % (movie_title, movie_rating, movie_link))
    
-                FileAccess.insertMovie(db_cursor, listEntry)
-             
+                FileAccess.insertMovie(db_cursor, listEntry)        # insert movie list type
                 
-                scrPerPage.getPerPage(db_cursor, headerHref, getSeqId[0])
+                scrPerPage.getPerPage(db_cursor, headerHref, getSeqId[0]) # get detail of that title
                 logging.info('id '+ str(getSeqId[0]) + ' inserted succesfully')
                 time.sleep(0.2) 
             logging.info("next record") 
@@ -109,13 +108,19 @@ def getSource(header):
 def scrape(baseUrl): 
     logging.basicConfig(
             filename='runlog.log',
-            filemode ='w',
+            filemode ='a',                      #set 'w' to overwrite/truncate file runlog.log
             format =FORMAT,
             level=logging.DEBUG) 
-   
-    r = requests.get(baseUrl, verify=False)
-    soup = BeautifulSoup(r.text, "html5lib")
     
+    try:                                        #check if requests can connect https to baseUrl
+        r = requests.get(baseUrl, verify=False)       
+        logging.info("succesfully connect to %s" %(baseUrl))
+    except requests.exceptions.RequestException as e:
+        logging.error(e) 
+        raise SystemExit(e)
+
+    soup = BeautifulSoup(r.text, "html5lib")
+ 
     header = soup.find("div", {"id": "now-playing"})
     #print soup.prettify()
     try: 
@@ -123,10 +128,6 @@ def scrape(baseUrl):
       
     except BaseException as e:
         logging.error('Error %s' % str(e))
-        #logging.error('line '.format(sys.exc_info()[-1].tb_lineno))
-        
-        #print "Error : " +str(e)
-        #print "line : {}".format(sys.exc_info()[-1].tb_lineno)
 
 if __name__ == "__main__":
     url ="https://www.21cineplex.com"
